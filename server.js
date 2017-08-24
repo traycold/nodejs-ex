@@ -3,7 +3,8 @@ var express = require('express'),
     fs      = require('fs'),
     app     = express(),
     eps     = require('ejs'),
-    morgan  = require('morgan');
+    morgan  = require('morgan'),
+    http = require("http");
     
 Object.assign=require('object-assign')
 
@@ -89,6 +90,27 @@ app.get('/pagecount', function (req, res) {
   } else {
     res.send('{ pageCount: -1 }');
   }
+});
+
+app.get('/test', function (req, res) {
+
+	var options = {
+		host: 'www.viaggiatreno.it',
+		port: 80,
+		path: '/viaggiatrenonew/resteasy/viaggiatreno/andamentoTreno/S07113/8804'
+	};
+
+	http.get(options, function(res) {
+		console.log("Got response: " + res.statusCode);
+
+		res.on("data", function(chunk) {
+		  res.setHeader('Content-Type', 'application/json');
+    	res.send(chunk);
+		});
+	}).on('error', function(e) {
+		res.send('{ status: "'+res.statusCode+'" , error: "'+e.message+'"}');
+	});
+
 });
 
 // error handling
